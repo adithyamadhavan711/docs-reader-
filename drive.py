@@ -35,16 +35,30 @@ def get_documents_drive():
 
     service = build("drive", "v3", credentials=creds)
 
-    results = (
-        service.files()
-        .list(
-            q="mimeType='application/vnd.google-apps.document'",
-            fields="files(id,name,modifiedTime)",
-        )
-        .execute()
-    )
+    documents = []
+    page_token = None
 
-    return results["files"]
+    while True:
+
+        results = (
+            service.files()
+            .list(
+                q="mimeType='application/vnd.google-apps.document'",
+                pageSize=1000,
+                pageToken=page_token,
+                fields="nextPageToken, files(id,name,modifiedTime)",
+            )
+            .execute()
+        )
+
+        documents.extend(results["files"])
+
+        page_token = results.get("nextPageToken")
+
+        if page_token is None:
+            break
+
+    return documents
 
 
 def main():

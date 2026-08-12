@@ -66,6 +66,7 @@ if args.command == "load":
 
 elif args.command == "search":
 
+    print("started")
     results = search_doc(args.word)
 
     for title, content in results:
